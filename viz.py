@@ -4,9 +4,13 @@ from pprint import pprint
 import numpy as np
 import matplotlib.pyplot as plt
 
-from mpltools import style
+try:
+	reduce
+except NameError:
+	from functools import reduce
+# from mpltools import style
 
-style.use(['ggplot', 'pof'])
+# style.use(['ggplot', 'pof'])
 
 
 def read_excel(f):
