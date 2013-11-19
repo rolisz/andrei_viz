@@ -19,26 +19,21 @@ def read_excel(f):
                 sheets[s.name][s.cell(row, 1).value] = s.cell(row, 6).value
     return sheets
 
+
+def reduce_months(acc, new_month):
+    for person in new_month:
+        if person not in acc:
+            acc[person] = {}
+        for place in new_month[person]:
+            if place not in acc[person]:
+                acc[person][place] = []
+            acc[person][place].append(new_month[person][place])
+    return acc
+
 septembrie = read_excel('Gabi septembrie 2013.xls')
 octombrie = read_excel('GABI OCTOMBRIE 2013.xls')
 
-combined = {}
-
-for person in set(septembrie.iterkeys()).union(octombrie.iterkeys()):
-    combined[person] = {}
-    places = set()
-    for month in [septembrie, octombrie]:
-        if person in month:
-            places = places.union(month[person].iterkeys())
-    for place in places:
-        diff = []
-        for month in [septembrie, octombrie]:
-            if place in month[person]:
-                diff.append(month[person][place])
-            else:
-                diff.append(0)
-        combined[person][place] = diff
-
+combined = reduce(reduce_months, [septembrie, octombrie, septembrie], {})
 print(combined['OLIVIU'])
 for place in combined['OLIVIU']:
     plt.plot(combined['OLIVIU'][place])
