@@ -13,10 +13,13 @@ def read_excel(f):
     wb = open_workbook(f, ragged_rows=True)
     sheets = {}
     for s in wb.sheets():
-        if '+BANI' not in s.name:
-            sheets[s.name] = {}
+        if '+BANI' in s.name:
+            sheets[s.name[:-5]] = {}
             for row in range(3, s.nrows - 1):
-                sheets[s.name][s.cell(row, 1).value] = s.cell(row, 6).value
+                if s.cell(row, 1).value == 'TOTAL':
+                    break
+                sheets[s.name[:-5]][s.cell(row, 1).value] = {'cant': s.cell(row, 6).value,
+                                                        'bani': s.cell(row, 7).value}
     return sheets
 
 
@@ -34,8 +37,9 @@ septembrie = read_excel('Gabi septembrie 2013.xls')
 octombrie = read_excel('GABI OCTOMBRIE 2013.xls')
 
 combined = reduce(reduce_months, [septembrie, octombrie, septembrie], {})
-print(combined['OLIVIU'])
+# print(combined['OLIVIU'])
 for place in combined['OLIVIU']:
-    plt.plot(combined['OLIVIU'][place])
+    plt.plot(map(lambda x: x['cant'], combined['OLIVIU'][place]), label=place)
+plt.legend(loc=1)
 plt.show()
 
